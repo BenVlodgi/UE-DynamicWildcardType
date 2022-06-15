@@ -14,10 +14,10 @@ struct DYNAMICWILDCARDMODULE_API FDynamicWildcard
 	
 public:
 
-	// The Property that holds the data. Useful for knowing what type of data we are pointing to.
+	// The Property that holds the original data.
 	FProperty* ValueProperty;
 
-	// Pointer to the actual data.
+	// Pointer to the original data.
 	void* ValuePointer;
 
 	// Our value was last passed in directly as a string.
@@ -28,17 +28,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Message System")
 	bool bPointerHasBeenCachedToString = false;
 
-	// This holds a string representation of the value, which is useful for marshaling data into anonymous function calls.
+	// This holds a string representation of the value.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Message System")
 	FString ValueAsString;
 
-	// TODO: This persistently holds reference to the object so the engine doesn't GC it.
+	// TODO: Persistently hold reference to the object so the engine doesn't GC it.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category = "Message System")
 	UObject* ValueAsObject;
 
 	TArray<uint8> PropertySerialized;
-	FArchive PropertyAsArchive;
-	//FArchive ValueAsArchive;
 
 	// TODO: Build array of all referenced UObjects referenced by ValuePointer if it is a Struct. 
 	// This to prevent GC on anything referenced by the struct alone. Like an Array of UObjects.
