@@ -19,8 +19,8 @@ public:
 	static void MakeDynamicWildcard(const int32& Value, FDynamicWildcard& DynamicWildcard);
 	DECLARE_FUNCTION(execMakeDynamicWildcard);
 
-	UFUNCTION(BlueprintCallable, CustomThunk, meta = (DisplayName = "Get Value", CompactNodeTitle = "->", CustomStructureParam = "Value, DummyParameter", KeyWords = "resolve, break", HidePin = "DummyParameter"), Category = "Dynamic Wildcard")
-	static void GetDynamicWildcard(const FDynamicWildcard& Target, bool& IsValid, int32& Value, int32& DummyParameter);
+	UFUNCTION(BlueprintCallable, CustomThunk, meta = (DisplayName = "Get Value", CompactNodeTitle = "->", CustomStructureParam = "Value", KeyWords = "resolve, break"), Category = "Dynamic Wildcard")
+	static void GetDynamicWildcard(const FDynamicWildcard& Target, bool& IsValid, int32& Value);
 	DECLARE_FUNCTION(execGetDynamicWildcard);
 
 	/** Converts the value stored in a MessageParameterValueStruct to a string. The value is cached for quicker retrieval in the future. */

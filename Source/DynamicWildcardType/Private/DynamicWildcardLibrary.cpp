@@ -80,33 +80,15 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
 	void* InValue = Z_Param_Target.ValuePointer;
 
 	Stack.MostRecentPropertyAddress = NULL;
-
 	FProperty* OutValueProperty = NULL;
 	void* OutValuePointer = NULL;
 
-	//FProperty* OutDummyProperty = NULL;
-	//void* OutDummyPointer = NULL;
+	//Stack.StepCompiledInRef(OutValuePointer);
+	Stack.Step(Stack.Object, OutValuePointer);
+	
 
-	if (Stack.Code)
-	{
-		Stack.Step(Stack.Object, OutValuePointer);
-	}
-	else
-	{
-		// Does this ever happen?
-		UE_LOG(LogTemp, Error, TEXT("Dynamic Wildcard: Get: False: Stack.Code: %d"), Stack.Code);
-		checkSlow(CastField<TProperty>(PropertyChainForCompiledIn) && CastField<FProperty>(PropertyChainForCompiledIn));
-		FProperty* Property = (FProperty*)Stack.PropertyChainForCompiledIn;
-		Stack.PropertyChainForCompiledIn = Property->Next;
-		Stack.StepExplicitProperty(OutValuePointer, Property);
-
-	}
 	OutValueProperty = Stack.MostRecentProperty;
 	OutValuePointer = Stack.MostRecentPropertyAddress;
-
-	// Check if this is the right way
-	//Stack.Step(Stack.Object, OutValuePointer);
-	//OutDummyProperty = Stack.MostRecentProperty;
 
 
 	P_FINISH;
@@ -115,26 +97,11 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
 
 	bool bCompatiblePropertyType = false;
 
-	/*
-	bool bCopyFromPointer = true;
-	if(bCopyFromPointer)
+	/* 
+	//bool bDeserializeFromString = true;
+	//if(bDeserializeFromString)
 	{
-		FProperty* OutValueProperty = CastField<FProperty>(Stack.MostRecentProperty);
-		if (InValueProperty && InValue && OutValueProperty)
-		{
-			if (InValueProperty->GetClass()->IsChildOf(OutValueProperty->GetClass()))
-			{
-				// This uses the pointers
-				OutValueProperty->CopyCompleteValueFromScriptVM((Stack.MostRecentPropertyAddress != NULL) ? (void*)(Stack.MostRecentPropertyAddress) : (void*)OutValuePointer, InValue);
-				bCompatiblePropertyType = true;
-			}
-		}
-	}//*/
-
-	/*
-	bool bDeserializeFromString = true;
-	if(bDeserializeFromString)
-	{
+		// Deserialize From String
 		//Note: If used, Should this have a type check ahead of time?
 		// This Deserializes the data from a string.
 		FProperty* OutValueProperty = CastField<FProperty>(Stack.MostRecentProperty);
@@ -144,46 +111,13 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
 	}//*/
 
 	///*
-	bool bDeserializeFromBinary = true;
-	if (bDeserializeFromBinary)
+	//bool bDeserializeFromBinary = true;
+	//if (bDeserializeFromBinary)
 	{
-		//FProperty* OutValueProperty = CastField<FProperty>(Stack.MostRecentProperty);
-		//uint8* OutValuePointer = Stack.MostRecentPropertyAddress;
-
+		// Deserialize From Binary
+		OutValueProperty->ClearValue_InContainer(OutValuePointer); // should do this for whole array if exists, right?
 		OutValueProperty->CopyCompleteValue(OutValuePointer, Z_Param_Target.PropertySerialized.GetData());
-
-		//FMemoryReader PropertySerializedReader(Z_Param_Target.PropertySerialized);
-		////UField field = UField(EStaticConstructor::EC_StaticConstructor, EObjectFlags::RF_Dynamic);
-		////FProperty DeserializedProperty = FProperty::GetDefaultPropertyValue();
-		////DeserializedProperty.Serialize(PropertySerializedReader);
-		////DeserializedProperty.CopyCompleteValueToScriptVM((Stack.MostRecentPropertyAddress != NULL) ? (void*)(Stack.MostRecentPropertyAddress) : (void*)OutValuePointer, InValue);
-		//
-		////OutValueProperty->CopyCompleteValueFromScriptVM((Stack.MostRecentPropertyAddress != NULL) ? (void*)(Stack.MostRecentPropertyAddress) : &Z_Param_Target.PropertySerialized, InValue);
-		////OutValueProperty->CopyCompleteValueFromScriptVM(Stack.MostRecentPropertyAddress, &Z_Param_Target.PropertySerialized);
-		//OutValueProperty->Serialize(PropertySerializedReader);
-		
 		bCompatiblePropertyType = true;
-
-		
-
-		//FStrProperty::TCppType A = FStrProperty::GetDefaultPropertyValue();
-
-		//UObject::execInstanceVariable()
-		
-		
-		// P_GET_PROPERTY
-		//UIntProperty::TCppType Z_Param_a = UIntProperty::GetDefaultPropertyValue();
-		//Stack.StepCompiledIn < UIntProperty >(&Z_Param_a);
-
-
-
-		//// Copy value from deserialized pointer to ouptut.
-		//FProperty* DeserializedProperty = Z_Param_Target.PropertyAsArchive.GetSerializedProperty();
-		//if (DeserializedProperty)
-		//{
-		//	DeserializedProperty->CopyCompleteValueToScriptVM((Stack.MostRecentPropertyAddress != NULL) ? (void*)(Stack.MostRecentPropertyAddress) : (void*)OutValuePointer, InValue);
-		//	bCompatiblePropertyType = true;
-		//}
 	}//*/
 
 	Z_Param_Out_IsValid = bCompatiblePropertyType;
