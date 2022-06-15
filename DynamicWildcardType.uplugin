@@ -2,23 +2,24 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "DynamicWildcardType",
+	"FriendlyName": "Dynamic Wildcard",
 	"Description": "",
-	"Category": "Other",
-	"CreatedBy": "Dream Seed LLC",
-	"CreatedByURL": "",
+	"Category": "Misc",
+	"CreatedBy": "Dream Seed",
+	"CreatedByURL": "https://dreamseed.games/",
 	"DocsURL": "",
 	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
+	"SupportURL": "mailto:hello@dreamseed.games",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
 			"Name": "DynamicWildcardType",
 			"Type": "Runtime",
-			"LoadingPhase": "PreLoadingScreen"
+			"LoadingPhase": "PreLoadingScreen",
+			"BlacklistPlatforms" : []
 		}
 	]
 }
