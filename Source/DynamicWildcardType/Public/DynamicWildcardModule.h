@@ -4,7 +4,7 @@
 
 #include "Modules/ModuleManager.h"
 
-class FDynamicWildcardTypeModule : public IModuleInterface
+class FDynamicWildcardModule : public IModuleInterface
 {
 public:
 

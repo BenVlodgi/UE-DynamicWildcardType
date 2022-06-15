@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class DynamicWildcardType : ModuleRules
+public class DynamicWildcardModule : ModuleRules
 {
-	public DynamicWildcardType(ReadOnlyTargetRules Target) : base(Target)
+	public DynamicWildcardModule(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -36,8 +36,8 @@ public class DynamicWildcardType : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
+				//"Slate",
+				//"SlateCore",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

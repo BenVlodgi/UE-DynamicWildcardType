@@ -8,7 +8,7 @@
 // Container for any type of data.
 // Note: does not hold onto references of the data. So it may be garbage collected if only referenced by this struct.
 USTRUCT(BlueprintType)
-struct DYNAMICWILDCARDTYPE_API FDynamicWildcard
+struct DYNAMICWILDCARDMODULE_API FDynamicWildcard
 {
 	GENERATED_BODY()
 	

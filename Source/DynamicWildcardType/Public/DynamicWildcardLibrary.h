@@ -10,7 +10,7 @@
 
 // Utilities for storing and retrieving data from the Dynamic Wildcard struct.
 UCLASS(BlueprintType)
-class DYNAMICWILDCARDTYPE_API UDynamicWildcardLibrary : public UBlueprintFunctionLibrary
+class DYNAMICWILDCARDMODULE_API UDynamicWildcardLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	

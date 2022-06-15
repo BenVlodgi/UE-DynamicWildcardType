@@ -16,7 +16,7 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "DynamicWildcardType",
+			"Name": "DynamicWildcardModule",
 			"Type": "Runtime",
 			"LoadingPhase": "PreLoadingScreen",
 			"BlacklistPlatforms" : []

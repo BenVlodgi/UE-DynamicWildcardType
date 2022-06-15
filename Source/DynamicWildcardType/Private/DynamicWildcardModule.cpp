@@ -1,16 +1,16 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "DynamicWildcardType.h"
+#include "DynamicWildcardModule.h"
 
-#define LOCTEXT_NAMESPACE "FDynamicWildcardTypeModule"
+#define LOCTEXT_NAMESPACE "FDynamicWildcardModule"
 
-void FDynamicWildcardTypeModule::StartupModule()
+void FDynamicWildcardModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	
 }
 
-void FDynamicWildcardTypeModule::ShutdownModule()
+void FDynamicWildcardModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -19,4 +19,4 @@ void FDynamicWildcardTypeModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FDynamicWildcardTypeModule, DynamicWildcardType)
+IMPLEMENT_MODULE(FDynamicWildcardModule, DynamicWildcardModule)
