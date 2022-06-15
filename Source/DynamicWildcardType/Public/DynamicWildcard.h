@@ -30,13 +30,19 @@ public:
 
 	// This holds a string representation of the value, which is useful for marshaling data into anonymous function calls.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Message System")
-	FString ValueString;
+	FString ValueAsString;
 
 	// TODO: This persistently holds reference to the object so the engine doesn't GC it.
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category = "Message System")
-	//UObject* Value_AsObject;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category = "Message System")
+	UObject* ValueAsObject;
+
+	TArray<uint8> PropertySerialized;
+	FArchive PropertyAsArchive;
+	//FArchive ValueAsArchive;
 
 	// TODO: Build array of all referenced UObjects referenced by ValuePointer if it is a Struct. 
 	// This to prevent GC on anything referenced by the struct alone. Like an Array of UObjects.
+
+	// TODO: Store the value in a byte array? Should we be serializing the data and then unserializing it?
 	
 };
