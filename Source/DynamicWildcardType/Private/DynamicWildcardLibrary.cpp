@@ -17,26 +17,26 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execMakeDynamicWildcard)
 	P_NATIVE_BEGIN;
 
 
-	Z_Param_DynamicWildcard.ValueProperty = ValueProperty;
-	Z_Param_DynamicWildcard.ValuePointer = ValuePropertyAddress;
+	//Z_Param_DynamicWildcard.ValueProperty = ValueProperty;
+	//Z_Param_DynamicWildcard.ValuePointer = ValuePropertyAddress;
 	Z_Param_DynamicWildcard.bLastSetFromString = false;
-	Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = false;
-	//Z_Param_DynamicWildcard.ValueAsString = 
-	UDynamicWildcardLibrary::Conv_DynamicWildcardToString(Z_Param_DynamicWildcard); //This will cache the value in ValueAsString;
 
-	//Z_Param_DynamicWildcard.PropertyAsArchive = FArchive();
-	//ValueProperty->Serialize(Z_Param_DynamicWildcard.PropertyAsArchive);
-
-
-	//FMemoryWriter PropertySerializedWriter(Z_Param_DynamicWildcard.PropertySerialized);
-	//ValueProperty->Serialize(PropertySerializedWriter);
-
-
-	Z_Param_DynamicWildcard.PropertySerialized.SetNumUninitialized(Z_Param_DynamicWildcard.ValueProperty->GetSize());
-	Z_Param_DynamicWildcard.ValueProperty->CopyCompleteValue(Z_Param_DynamicWildcard.PropertySerialized.GetData(), Z_Param_DynamicWildcard.ValuePointer);
+	bool bCacheValuesToString = true; // TODO Make this a plugin configuration.
+	if(bCacheValuesToString)
+	{
+		ValueProperty->ExportTextItem(Z_Param_DynamicWildcard.ValueAsString, ValuePropertyAddress, nullptr, nullptr, 0);
+		Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = true;
+	}
+	else
+	{
+		Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = false;
+		UDynamicWildcardLibrary::Conv_DynamicWildcardToString(Z_Param_DynamicWildcard); //This will cache the value in ValueAsString;
+	}
 
 
-	//ValueProperty->SerializeItem(Z_Param_DynamicWildcard.ValueAsArchive);
+	Z_Param_DynamicWildcard.PropertySerialized.SetNumUninitialized(ValueProperty->GetSize());
+	ValueProperty->CopyCompleteValue(Z_Param_DynamicWildcard.PropertySerialized.GetData(), ValuePropertyAddress);
+
 
 	// Attempts to get reference to the pointer value as an object.
 	{
@@ -75,9 +75,6 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
 
 	// Retrieves IsValid bool reference parameter from the stack. This must come now before the wildcard parmeter because of property stepping order.
 	P_GET_UBOOL_REF(Z_Param_Out_IsValid);
-
-	FProperty* InValueProperty = Z_Param_Target.ValueProperty;
-	void* InValue = Z_Param_Target.ValuePointer;
 
 	Stack.MostRecentPropertyAddress = NULL;
 	FProperty* OutValueProperty = NULL;
