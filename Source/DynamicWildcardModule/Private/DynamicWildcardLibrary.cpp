@@ -16,14 +16,26 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execMakeDynamicWildcard)
 	P_FINISH;
 	P_NATIVE_BEGIN;
 
+	Z_Param_DynamicWildcard = MakeDynamicWildcardFromProperty(ValueProperty, ValuePropertyAddress);
+	
+
+	P_NATIVE_END;
+}
+
+FDynamicWildcard UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(FProperty* ValueProperty, void* ValuePropertyAddress)
+{
+	//ValuePropertyAddress = nullptr;
+	//ValuePropertyAddress = ValueProperty->value; TODO: ME
+	FDynamicWildcard Z_Param_DynamicWildcard;
 
 	//Z_Param_DynamicWildcard.ValueProperty = ValueProperty;
 	//Z_Param_DynamicWildcard.ValuePointer = ValuePropertyAddress;
 	Z_Param_DynamicWildcard.bLastSetFromString = false;
 
 	bool bCacheValuesToString = true; // TODO Make this a plugin configuration.
-	if(bCacheValuesToString)
+	if (bCacheValuesToString)
 	{
+		Z_Param_DynamicWildcard.ValueAsString = ""; // Must clear it incase this is being called over and over in the same player. The struct ref is the same. And will stack the string value otherwise.
 		ValueProperty->ExportTextItem(Z_Param_DynamicWildcard.ValueAsString, ValuePropertyAddress, nullptr, nullptr, 0);
 		Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = true;
 	}
@@ -63,10 +75,8 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execMakeDynamicWildcard)
 		//Ptr = dynamic_cast<UObject*>(ValuePropertyAddress);
 	}
 
-	P_NATIVE_END;
+	return Z_Param_DynamicWildcard;
 }
-
-
 
 DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
 {
@@ -113,8 +123,16 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
 	{
 		// Deserialize From Binary
 		OutValueProperty->ClearValue_InContainer(OutValuePointer); // should do this for whole array if exists, right?
-		OutValueProperty->CopyCompleteValue(OutValuePointer, Z_Param_Target.PropertySerialized.GetData());
-		bCompatiblePropertyType = true;
+		if (Z_Param_Target.PropertySerialized.IsValidIndex(0))
+		{
+			OutValueProperty->CopyCompleteValue(OutValuePointer, Z_Param_Target.PropertySerialized.GetData());
+			bCompatiblePropertyType = true;
+		}
+		else
+		{
+			// No serialized value
+			bCompatiblePropertyType = false;
+		}
 	}//*/
 
 	Z_Param_Out_IsValid = bCompatiblePropertyType;

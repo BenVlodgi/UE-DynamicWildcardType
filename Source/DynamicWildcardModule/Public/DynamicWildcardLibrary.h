@@ -19,6 +19,8 @@ public:
 	static void MakeDynamicWildcard(const int32& Value, FDynamicWildcard& DynamicWildcard);
 	DECLARE_FUNCTION(execMakeDynamicWildcard);
 
+	static FDynamicWildcard MakeDynamicWildcardFromProperty(FProperty* ValueProperty, void* ValuePropertyAddress);
+
 	UFUNCTION(BlueprintCallable, CustomThunk, meta = (DisplayName = "Get Value", CompactNodeTitle = "->", CustomStructureParam = "Value", KeyWords = "resolve, break"), Category = "Dynamic Wildcard")
 	static void GetDynamicWildcard(const FDynamicWildcard& Target, bool& IsValid, int32& Value);
 	DECLARE_FUNCTION(execGetDynamicWildcard);
