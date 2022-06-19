@@ -4,6 +4,8 @@
 
 #include "DynamicWildcardLibrary.h"
 
+#include "DynamicWildcardPluginSettings.h"
+
 
 DEFINE_FUNCTION(UDynamicWildcardLibrary::execMakeDynamicWildcard)
 {
@@ -17,7 +19,7 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execMakeDynamicWildcard)
 	P_NATIVE_BEGIN;
 
 	Z_Param_DynamicWildcard = MakeDynamicWildcardFromProperty(ValueProperty, ValuePropertyAddress);
-	
+
 
 	P_NATIVE_END;
 }
@@ -32,17 +34,14 @@ FDynamicWildcard UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(FPrope
 	//Z_Param_DynamicWildcard.ValuePointer = ValuePropertyAddress;
 	Z_Param_DynamicWildcard.bLastSetFromString = false;
 
-	bool bCacheValuesToString = true; // TODO Make this a plugin configuration.
+	auto* settings = UDynamicWildcardPluginSettings::Get();
+
+	bool bCacheValuesToString = settings->StoreDataMethod == EDynamicWildcardStoreType::Both || settings->StoreDataMethod == EDynamicWildcardStoreType::String;
 	if (bCacheValuesToString)
 	{
 		Z_Param_DynamicWildcard.ValueAsString = ""; // Must clear it incase this is being called over and over in the same player. The struct ref is the same. And will stack the string value otherwise.
 		ValueProperty->ExportTextItem(Z_Param_DynamicWildcard.ValueAsString, ValuePropertyAddress, nullptr, nullptr, 0);
 		Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = true;
-	}
-	else
-	{
-		Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = false;
-		UDynamicWildcardLibrary::Conv_DynamicWildcardToString(Z_Param_DynamicWildcard); //This will cache the value in ValueAsString;
 	}
 
 
@@ -97,51 +96,50 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
 
 	//Stack.StepCompiledInRef(OutValuePointer);
 	Stack.Step(Stack.Object, OutValuePointer);
-	
 
-	OutValueProperty = Stack.MostRecentProperty;
+	OutValueProperty = CastField<FProperty>(Stack.MostRecentProperty);
 	OutValuePointer = Stack.MostRecentPropertyAddress;
 
 
 	P_FINISH;
 	P_NATIVE_BEGIN;
 
-
-	bool bCompatiblePropertyType = false;
-
-	/* 
-	//bool bDeserializeFromString = true;
-	//if(bDeserializeFromString)
+	if (OutValueProperty)
 	{
-		// Deserialize From String
-		//Note: If used, Should this have a type check ahead of time?
-		// This Deserializes the data from a string.
-		FProperty* OutValueProperty = CastField<FProperty>(Stack.MostRecentProperty);
-		const FString TargetValueAsString = UDynamicWildcardLibrary::Conv_DynamicWildcardToString(Z_Param_Target);
-		const TCHAR* Result = OutValueProperty->ImportText(*TargetValueAsString, Stack.MostRecentPropertyAddress, PPF_None, NULL);
-		bCompatiblePropertyType = Result != NULL;
-	}//*/
+		auto* settings = UDynamicWildcardPluginSettings::Get();
 
-	///*
-	//bool bDeserializeFromBinary = true;
-	//if (bDeserializeFromBinary)
-	{
-		// Deserialize From Binary
-		OutValueProperty->ClearValue_InContainer(OutValuePointer); // should do this for whole array if exists, right?
-		if (Z_Param_Target.PropertySerialized.IsValidIndex(0))
+		bool bCompatiblePropertyType = false;
+
+		bool bCanDoStringLoad = Z_Param_Target.ValueAsString.Len() > 0;
+		bool bCanDoBinaryLoad = !Z_Param_Target.PropertySerialized.IsValidIndex(0);
+		bool bPreferStringLoad = settings->PreferredDataRetrievalMethod == EDynamicWildcardPreferredStoreType::String;
+		
+		// Load string if we can, and prefer it (or can't do binary) 
+		if (bCanDoStringLoad && (bPreferStringLoad || !bCanDoBinaryLoad))
 		{
+			// Deserialize From String
+			// Note: If used, Should this have a type check ahead of time?
+			// This Deserializes the data from a string.
+			//const FString TargetValueAsString = UDynamicWildcardLibrary::Conv_DynamicWildcardToString(Z_Param_Target);
+			const FString TargetValueAsString = Z_Param_Target.ValueAsString;
+			const TCHAR* Result = OutValueProperty->ImportText(*TargetValueAsString, Stack.MostRecentPropertyAddress, PPF_None, NULL);
+			bCompatiblePropertyType = Result != NULL;
+		}
+		else if (bCanDoBinaryLoad)
+		{
+			// Deserialize From Binary
+			OutValueProperty->ClearValue_InContainer(OutValuePointer); // should do this for whole array if exists, right?
 			OutValueProperty->CopyCompleteValue(OutValuePointer, Z_Param_Target.PropertySerialized.GetData());
 			bCompatiblePropertyType = true;
+
 		}
 		else
 		{
-			// No serialized value
-			bCompatiblePropertyType = false;
+			// No stored value
 		}
-	}//*/
 
-	Z_Param_Out_IsValid = bCompatiblePropertyType;
-
+		Z_Param_Out_IsValid = bCompatiblePropertyType;
+	}
 
 	P_NATIVE_END;
 }
