@@ -78,6 +78,11 @@ FDynamicWildcard UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(FPrope
 	return Z_Param_DynamicWildcard;
 }
 
+void UDynamicWildcardLibrary::CopyDynamicWildcardToProperty(FDynamicWildcard DynamicWildcard, FProperty* ValueProperty, void* ValuePropertyAddress)
+{
+	// TODO: Implement
+}
+
 DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
 {
 	// Retrieves Target parameter from the stack.
