@@ -21,4 +21,11 @@ public:
 	UPROPERTY(config, EditAnywhere, Category = "Dynamic Wildcard", meta = (DisplayName = "Preferred Data Retrieval Method"))
 	EDynamicWildcardPreferredStoreType PreferredDataRetrievalMethod = EDynamicWildcardPreferredStoreType::Default;
 	
+	static FORCEINLINE UDynamicWildcardPluginSettings* Get()
+	{
+		UDynamicWildcardPluginSettings* Settings = GetMutableDefault<UDynamicWildcardPluginSettings>();
+		check(Settings);
+
+		return Settings;
+	}
 };
