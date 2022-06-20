@@ -115,7 +115,7 @@ void UDynamicWildcardLibrary::CopyDynamicWildcardToProperty(FDynamicWildcard Dyn
 		auto* settings = UDynamicWildcardPluginSettings::Get();
 
 		bool bCanDoStringLoad = DynamicWildcard.ValueAsString.Len() > 0;
-		bool bCanDoBinaryLoad = !DynamicWildcard.PropertySerialized.IsValidIndex(0);
+		bool bCanDoBinaryLoad = DynamicWildcard.PropertySerialized.IsValidIndex(0);
 		bool bPreferStringLoad = settings->PreferredDataRetrievalMethod == EDynamicWildcardPreferredStoreType::String;
 
 		// Load string if we can, and prefer it (or can't do binary) 
