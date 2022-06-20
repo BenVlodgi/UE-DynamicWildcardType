@@ -17,7 +17,7 @@ public:
 	UPROPERTY(config, EditAnywhere, Category = "Dynamic Wildcard", meta = (DisplayName = "Store Data Method"))
 	EDynamicWildcardStoreType StoreDataMethod = EDynamicWildcardStoreType::Both;
 
-	/**The wildcard data's preferred way of being loaded. If this way is unavailable the other way will be used..*/
+	/**The wildcard data's preferred way of being loaded. If this way is unavailable the other way will be used.*/
 	UPROPERTY(config, EditAnywhere, Category = "Dynamic Wildcard", meta = (DisplayName = "Preferred Data Retrieval Method"))
 	EDynamicWildcardPreferredStoreType PreferredDataRetrievalMethod = EDynamicWildcardPreferredStoreType::Default;
 	
