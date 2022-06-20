@@ -19,12 +19,17 @@ public:
 	static void MakeDynamicWildcard(const int32& Value, FDynamicWildcard& DynamicWildcard);
 	DECLARE_FUNCTION(execMakeDynamicWildcard);
 
-	static FDynamicWildcard MakeDynamicWildcardFromProperty(FProperty* ValueProperty, void* ValuePropertyAddress);
-	static void CopyDynamicWildcardToProperty(FDynamicWildcard DynamicWildcard, FProperty* ValueProperty, void* ValuePropertyAddress);
 
 	UFUNCTION(BlueprintCallable, CustomThunk, meta = (DisplayName = "Get Value", CompactNodeTitle = "->", CustomStructureParam = "Value", KeyWords = "resolve, break"), Category = "Dynamic Wildcard")
 	static void GetDynamicWildcard(const FDynamicWildcard& Target, bool& IsValid, int32& Value);
 	DECLARE_FUNCTION(execGetDynamicWildcard);
+
+
+	static FDynamicWildcard MakeDynamicWildcardFromProperty(FProperty* ValueProperty, void* ValuePropertyAddress);
+
+
+	static void CopyDynamicWildcardToProperty(FDynamicWildcard DynamicWildcard, FProperty* ValueProperty, void* ValuePropertyAddress, bool& bCompatiblePropertyType);
+
 
 	/** Converts the value stored in a MessageParameterValueStruct to a string. The value is cached for quicker retrieval in the future. */
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "ToString (Dynamic Wildcard)", CompactNodeTitle = "->", BlueprintAutocast), Category = "Dynamic Wildcard")

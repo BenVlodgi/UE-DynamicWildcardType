@@ -20,9 +20,37 @@ DEFINE_FUNCTION(UDynamicWildcardLibrary::execMakeDynamicWildcard)
 
 	Z_Param_DynamicWildcard = MakeDynamicWildcardFromProperty(ValueProperty, ValuePropertyAddress);
 
+	P_NATIVE_END;
+}
+
+
+DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
+{
+	// Retrieves Target parameter from the stack.
+	P_GET_STRUCT_REF(FDynamicWildcard, Z_Param_Target);
+
+	// Retrieves IsValid bool reference parameter from the stack. This must come now before the wildcard parmeter because of property stepping order.
+	P_GET_UBOOL_REF(Z_Param_Out_IsValid);
+
+	Stack.MostRecentPropertyAddress = NULL;
+	FProperty* OutValueProperty = NULL;
+	void* OutValuePointer = NULL;
+
+	//Stack.StepCompiledInRef(OutValuePointer);
+	Stack.Step(Stack.Object, OutValuePointer);
+
+	OutValueProperty = CastField<FProperty>(Stack.MostRecentProperty);
+	OutValuePointer = Stack.MostRecentPropertyAddress;
+
+
+	P_FINISH;
+	P_NATIVE_BEGIN;
+
+	CopyDynamicWildcardToProperty(Z_Param_Target, OutValueProperty, OutValuePointer, Z_Param_Out_IsValid);
 
 	P_NATIVE_END;
 }
+
 
 FDynamicWildcard UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(FProperty* ValueProperty, void* ValuePropertyAddress)
 {
@@ -77,72 +105,42 @@ FDynamicWildcard UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(FPrope
 	return Z_Param_DynamicWildcard;
 }
 
-void UDynamicWildcardLibrary::CopyDynamicWildcardToProperty(FDynamicWildcard DynamicWildcard, FProperty* ValueProperty, void* ValuePropertyAddress)
+
+void UDynamicWildcardLibrary::CopyDynamicWildcardToProperty(FDynamicWildcard DynamicWildcard, FProperty* ValueProperty, void* ValuePropertyAddress, bool& bCompatiblePropertyType)
 {
-	// TODO: Implement
-}
+	bCompatiblePropertyType = false;
 
-DEFINE_FUNCTION(UDynamicWildcardLibrary::execGetDynamicWildcard)
-{
-	// Retrieves Target parameter from the stack.
-	P_GET_STRUCT_REF(FDynamicWildcard, Z_Param_Target);
-
-	// Retrieves IsValid bool reference parameter from the stack. This must come now before the wildcard parmeter because of property stepping order.
-	P_GET_UBOOL_REF(Z_Param_Out_IsValid);
-
-	Stack.MostRecentPropertyAddress = NULL;
-	FProperty* OutValueProperty = NULL;
-	void* OutValuePointer = NULL;
-
-	//Stack.StepCompiledInRef(OutValuePointer);
-	Stack.Step(Stack.Object, OutValuePointer);
-
-	OutValueProperty = CastField<FProperty>(Stack.MostRecentProperty);
-	OutValuePointer = Stack.MostRecentPropertyAddress;
-
-
-	P_FINISH;
-	P_NATIVE_BEGIN;
-
-	if (OutValueProperty)
+	if (ValueProperty)
 	{
 		auto* settings = UDynamicWildcardPluginSettings::Get();
 
-		bool bCompatiblePropertyType = false;
-
-		bool bCanDoStringLoad = Z_Param_Target.ValueAsString.Len() > 0;
-		bool bCanDoBinaryLoad = !Z_Param_Target.PropertySerialized.IsValidIndex(0);
+		bool bCanDoStringLoad = DynamicWildcard.ValueAsString.Len() > 0;
+		bool bCanDoBinaryLoad = !DynamicWildcard.PropertySerialized.IsValidIndex(0);
 		bool bPreferStringLoad = settings->PreferredDataRetrievalMethod == EDynamicWildcardPreferredStoreType::String;
-		
+
 		// Load string if we can, and prefer it (or can't do binary) 
 		if (bCanDoStringLoad && (bPreferStringLoad || !bCanDoBinaryLoad))
 		{
 			// Deserialize From String
-			// Note: If used, Should this have a type check ahead of time?
-			// This Deserializes the data from a string.
-			//const FString TargetValueAsString = UDynamicWildcardLibrary::Conv_DynamicWildcardToString(Z_Param_Target);
-			const FString TargetValueAsString = Z_Param_Target.ValueAsString;
-			const TCHAR* Result = OutValueProperty->ImportText(*TargetValueAsString, Stack.MostRecentPropertyAddress, PPF_None, NULL);
+			// Note: Should this have a type check ahead of time?
+			const FString TargetValueAsString = DynamicWildcard.ValueAsString;
+			const TCHAR* Result = ValueProperty->ImportText(*TargetValueAsString, ValuePropertyAddress, PPF_None, NULL);
 			bCompatiblePropertyType = Result != NULL;
 		}
 		else if (bCanDoBinaryLoad)
 		{
 			// Deserialize From Binary
-			OutValueProperty->ClearValue_InContainer(OutValuePointer); // should do this for whole array if exists, right?
-			OutValueProperty->CopyCompleteValue(OutValuePointer, Z_Param_Target.PropertySerialized.GetData());
+			ValueProperty->ClearValue_InContainer(ValuePropertyAddress); // should do this for whole array if exists, right?
+			ValueProperty->CopyCompleteValue(ValuePropertyAddress, DynamicWildcard.PropertySerialized.GetData());
 			bCompatiblePropertyType = true;
-
 		}
 		else
 		{
 			// No stored value
 		}
-
-		Z_Param_Out_IsValid = bCompatiblePropertyType;
 	}
-
-	P_NATIVE_END;
 }
+
 
 FString UDynamicWildcardLibrary::Conv_DynamicWildcardToString(FDynamicWildcard& DynamicWildcard)
 {
@@ -166,6 +164,7 @@ FString UDynamicWildcardLibrary::Conv_DynamicWildcardToString(FDynamicWildcard& 
 
 	return returnValue;
 }
+
 
 //FDynamicWildcard UDynamicWildcardLibrary::Conv_StringToMessageParameterValueStruct(FString String, EPropertyTypeEnum Type)
 //{
@@ -201,8 +200,6 @@ FString UDynamicWildcardLibrary::Conv_DynamicWildcardToString(FDynamicWildcard& 
 //	//}
 //	return returnValue;
 //}
-
-
 
 
 //#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
