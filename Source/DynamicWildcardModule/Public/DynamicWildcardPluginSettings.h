@@ -21,6 +21,7 @@ public:
 	UPROPERTY(config, EditAnywhere, Category = "Dynamic Wildcard", meta = (DisplayName = "Preferred Data Retrieval Method"))
 	EDynamicWildcardPreferredStoreType PreferredDataRetrievalMethod = EDynamicWildcardPreferredStoreType::Default;
 	
+	//UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Dynamic Wildcard Plugin Settings"))
 	static FORCEINLINE UDynamicWildcardPluginSettings* Get()
 	{
 		UDynamicWildcardPluginSettings* Settings = GetMutableDefault<UDynamicWildcardPluginSettings>();
