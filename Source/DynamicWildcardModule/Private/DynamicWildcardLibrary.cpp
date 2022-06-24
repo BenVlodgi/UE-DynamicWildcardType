@@ -77,9 +77,12 @@ FDynamicWildcard UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(FPrope
 			Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = true;
 		}
 
-
-		Z_Param_DynamicWildcard.PropertySerialized.SetNumUninitialized(ValueProperty->GetSize());
-		ValueProperty->CopyCompleteValue(Z_Param_DynamicWildcard.PropertySerialized.GetData(), ValuePropertyAddress);
+		bool bCacheValuesToBinary = settings->StoreDataMethod == EDynamicWildcardStoreType::Both || settings->StoreDataMethod == EDynamicWildcardStoreType::Binary;
+		if (bCacheValuesToBinary)
+		{
+			Z_Param_DynamicWildcard.PropertySerialized.SetNumUninitialized(ValueProperty->GetSize());
+			ValueProperty->CopyCompleteValue(Z_Param_DynamicWildcard.PropertySerialized.GetData(), ValuePropertyAddress);
+		}
 
 
 		// Attempts to get reference to the pointer value as an object.
