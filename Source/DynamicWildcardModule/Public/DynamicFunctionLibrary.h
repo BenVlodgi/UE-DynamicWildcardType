@@ -41,10 +41,10 @@ public:
 	* @param Target The target to call the function on.
 	* @param FunctionName The Function to call.
 	* @param Parameters Parameter values to pass into the function call.
+	* @param bSuccess If the call was executed
 	* @param ReturnValues Values returned from the function call.
-	* Returns: If the call was executed.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Dynamic Code Reflection", meta = (DisplayName = "Call Function by Name", KeyWords = "function, event, reflection, parameters, args, arguments"))
-	static bool CallFunctionByName(UObject* Target, const FName FunctionName, FDynamicParametersStruct Parameters, FDynamicParametersStruct& ReturnValues);
+	static void CallFunctionByName(UObject* Target, const FName FunctionName, FDynamicParametersStruct Parameters, bool& bSuccess, FDynamicParametersStruct& ReturnValues);
 
 };

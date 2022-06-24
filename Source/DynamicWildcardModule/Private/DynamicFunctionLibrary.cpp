@@ -67,7 +67,7 @@ void UDynamicFunctionLibrary::GetFunctionProperies(const UClass* Class, FString 
 	}
 }
 
-bool UDynamicFunctionLibrary::CallFunctionByName(UObject* Target, const FName FunctionName, FDynamicParametersStruct Parameters, FDynamicParametersStruct& ReturnValues)
+void UDynamicFunctionLibrary::CallFunctionByName(UObject* Target, const FName FunctionName, FDynamicParametersStruct Parameters, bool& bSuccess, FDynamicParametersStruct& ReturnValues)
 {
 	//const TCHAR* Str = TEXT("");
 	FOutputDevice& Ar = *GLog;
@@ -92,12 +92,15 @@ bool UDynamicFunctionLibrary::CallFunctionByName(UObject* Target, const FName Fu
 		if (nullptr == Function)
 		{
 			UE_LOG(LogDynamicReflection, Verbose, TEXT("CallFunctionByName: Function not found '%s'"), *FunctionName.ToString());
-			return false;
+			bSuccess = false;
+			return;
 		}
 		if (0 == (Function->FunctionFlags & FUNC_Exec) && !bForceCallWithNonExec)
 		{
 			UE_LOG(LogDynamicReflection, Verbose, TEXT("CallFunctionByName: Function not executable '%s'"), *FunctionName.ToString());
-			return false;
+
+			bSuccess = false;
+			return;
 		}
 
 		FProperty* LastParameter = nullptr;
@@ -245,11 +248,18 @@ bool UDynamicFunctionLibrary::CallFunctionByName(UObject* Target, const FName Fu
 
 		for (TFieldIterator<FProperty> It(Function); It; ++It)
 		{
-			if ((It->PropertyFlags & CPF_ReturnParm) == CPF_ReturnParm)
+
+			if ((It->PropertyFlags & CPF_OutParm) == CPF_OutParm)
 			{
-				FDynamicWildcard functionReturnValue;// = UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(It);
-				ReturnValues.Parameters.Add("", functionReturnValue);
+				FString PropertyName;
+				It->GetName(PropertyName);
+				auto* dataPointer = It->ContainerPtrToValuePtr<uint8>(Params);
+
+				FDynamicWildcard functionReturnValue = UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(*It, dataPointer);
+
+				ReturnValues.Parameters.Add(FName(PropertyName), functionReturnValue);
 			}
+
 		}
 
 		//!!destructframe see also UObject::ProcessEvent
@@ -259,7 +269,9 @@ bool UDynamicFunctionLibrary::CallFunctionByName(UObject* Target, const FName Fu
 		}
 
 		// Success.
-		return true;
+		bSuccess = true;
+		return;
 	}
-	return false;
+	bSuccess = false;
+	return;
 }

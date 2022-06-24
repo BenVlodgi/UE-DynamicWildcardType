@@ -58,48 +58,62 @@ FDynamicWildcard UDynamicWildcardLibrary::MakeDynamicWildcardFromProperty(FPrope
 	//ValuePropertyAddress = ValueProperty->value; TODO: ME
 	FDynamicWildcard Z_Param_DynamicWildcard;
 
-	//Z_Param_DynamicWildcard.ValueProperty = ValueProperty;
-	//Z_Param_DynamicWildcard.ValuePointer = ValuePropertyAddress;
-	Z_Param_DynamicWildcard.bLastSetFromString = false;
-
-	auto* settings = UDynamicWildcardPluginSettings::Get();
-
-	bool bCacheValuesToString = settings->StoreDataMethod == EDynamicWildcardStoreType::Both || settings->StoreDataMethod == EDynamicWildcardStoreType::String;
-	if (bCacheValuesToString)
+	if (ValueProperty)
 	{
-		Z_Param_DynamicWildcard.ValueAsString = ""; // Must clear it incase this is being called over and over in the same player. The struct ref is the same. And will stack the string value otherwise.
-		ValueProperty->ExportTextItem(Z_Param_DynamicWildcard.ValueAsString, ValuePropertyAddress, nullptr, nullptr, 0);
-		Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = true;
+		//Z_Param_DynamicWildcard.ValueProperty = ValueProperty;
+		//Z_Param_DynamicWildcard.ValuePointer = ValuePropertyAddress;
+		Z_Param_DynamicWildcard.bLastSetFromString = false;
+
+		auto* settings = UDynamicWildcardPluginSettings::Get();
+
+		bool bCacheValuesToString = settings->StoreDataMethod == EDynamicWildcardStoreType::Both || settings->StoreDataMethod == EDynamicWildcardStoreType::String;
+		if (bCacheValuesToString)
+		{
+			Z_Param_DynamicWildcard.ValueAsString = ""; // Must clear it incase this is being called over and over in the same player. The struct ref is the same. And will stack the string value otherwise.
+			if (ValuePropertyAddress)
+			{
+				ValueProperty->ExportTextItem(Z_Param_DynamicWildcard.ValueAsString, ValuePropertyAddress, nullptr, nullptr, 0);
+			}
+			Z_Param_DynamicWildcard.bPointerHasBeenCachedToString = true;
+		}
+
+
+		Z_Param_DynamicWildcard.PropertySerialized.SetNumUninitialized(ValueProperty->GetSize());
+		ValueProperty->CopyCompleteValue(Z_Param_DynamicWildcard.PropertySerialized.GetData(), ValuePropertyAddress);
+
+
+		// Attempts to get reference to the pointer value as an object.
+		{
+			//Z_Param_DynamicWildcard.ValueAsObject =
+
+			//UObject* ValueAsObject;
+			//ValueAsObject = (UObject*)ValuePropertyAddress;
+			////ValueAsObject = dynamic_cast<UObject*>(ValuePropertyAddress);
+			//ValueAsObject = reinterpret_cast<UObject*>(ValuePropertyAddress);
+			////ValueAsObject = Cast<UObject*>(ValuePropertyAddress);p
+			//
+			//if (ValueAsObject && IsValid(ValueAsObject))
+			//{
+			//	UE_LOG(LogTemp, Error, TEXT("Dynamic Wildcard: Able to convert Dynamic Wildcard to object: %s."), *ValueAsObject->GetPathName());
+			//}
+			//else
+			//{
+			//	UE_LOG(LogTemp, Error, TEXT("Dynamic Wildcard: Unable to convert Dynamic Wildcard to object."));
+			//}
+
+
+			//UObject* Ptr;
+			////Ptr = ((UObject*)voidPtr)->IsA(someClass) ? (UObject*)voidPtr : nullptr;
+			//Ptr = dynamic_cast<UObject*>(ValuePropertyAddress);
+		}
 	}
-
-
-	Z_Param_DynamicWildcard.PropertySerialized.SetNumUninitialized(ValueProperty->GetSize());
-	ValueProperty->CopyCompleteValue(Z_Param_DynamicWildcard.PropertySerialized.GetData(), ValuePropertyAddress);
-
-
-	// Attempts to get reference to the pointer value as an object.
+	else
 	{
-		//Z_Param_DynamicWildcard.ValueAsObject =
+		UE_LOG(LogTemp, Error, TEXT("Dynamic Wildcard: MakeDynamicWildcardFromProperty: Property was null."));
 
-		//UObject* ValueAsObject;
-		//ValueAsObject = (UObject*)ValuePropertyAddress;
-		////ValueAsObject = dynamic_cast<UObject*>(ValuePropertyAddress);
-		//ValueAsObject = reinterpret_cast<UObject*>(ValuePropertyAddress);
-		////ValueAsObject = Cast<UObject*>(ValuePropertyAddress);
-		//
-		//if (ValueAsObject && IsValid(ValueAsObject))
-		//{
-		//	UE_LOG(LogTemp, Error, TEXT("Dynamic Wildcard: Able to convert Dynamic Wildcard to object: %s."), *ValueAsObject->GetPathName());
-		//}
-		//else
-		//{
-		//	UE_LOG(LogTemp, Error, TEXT("Dynamic Wildcard: Unable to convert Dynamic Wildcard to object."));
-		//}
-
-
-		//UObject* Ptr;
-		////Ptr = ((UObject*)voidPtr)->IsA(someClass) ? (UObject*)voidPtr : nullptr;
-		//Ptr = dynamic_cast<UObject*>(ValuePropertyAddress);
+		// The property was null, so lets say we loaded an empty string. This will gracefully give us an empty result when it is attempted to be used.
+		Z_Param_DynamicWildcard.bLastSetFromString = true;
+		Z_Param_DynamicWildcard.ValueAsString = "";
 	}
 
 	return Z_Param_DynamicWildcard;
