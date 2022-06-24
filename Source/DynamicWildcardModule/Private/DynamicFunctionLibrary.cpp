@@ -157,7 +157,7 @@ void UDynamicFunctionLibrary::CallFunctionByName(UObject* Target, const FName Fu
 
 
 #if WITH_EDITOR
-			// Don't do this now that we're executing. If ever do this, do it somehow on compile to collect the defaults. Also want Blueprint Defaults
+			// Don't do this now that we're executing. If ever do this, do it somehow on compile to collect the defaults. Also would want Blueprint Defaults
 			//if (false) 
 			//{
 			//	if (!FCString::Strcmp(*ArgStr, TEXT("")))
@@ -180,7 +180,7 @@ void UDynamicFunctionLibrary::CallFunctionByName(UObject* Target, const FName Fu
 				FDynamicWildcard* MessageParameterValue = Parameters.Parameters.Find(Key);
 				if (MessageParameterValue)
 				{
-					UE_LOG(LogDynamicReflection, Log, TEXT("CallFunctionByName: Found Property: %s"), *Key.ToString());
+					//UE_LOG(LogDynamicReflection, Log, TEXT("CallFunctionByName: Found Property: %s"), *Key.ToString());
 
 					auto* dataPointer = It->ContainerPtrToValuePtr<uint8>(Params);
 
