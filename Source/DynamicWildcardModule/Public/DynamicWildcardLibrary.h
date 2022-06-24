@@ -1,4 +1,4 @@
-// Copyright Dream Seed LLC, 2022
+// Copyright 2022 Dream Seed LLC.
 
 #pragma once
 
