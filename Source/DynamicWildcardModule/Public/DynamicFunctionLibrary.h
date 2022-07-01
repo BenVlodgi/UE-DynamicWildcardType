@@ -25,15 +25,15 @@ public:
 
 	/** Get all function names from this Class/Interface. **/
 	UFUNCTION(BlueprintCallable, Category = "Dynamic Code Reflection")
-	static void GetFunctionNames(const UClass* Class, TArray<FString>& FunctionNames);
+	static void GetFunctionNames(const UClass* Class, TArray<FName>& FunctionNames);
 
 	/** Get all function names from this Class/Interface that have a specified keyword. **/
 	UFUNCTION(BlueprintCallable, Category = "Dynamic Code Reflection", meta = (DevelopmentOnly))
-	static void GetFunctionNamesWithKeyword(const UClass* Class, FString keyword, TArray<FString>& FunctionNames);
+	static void GetFunctionNamesWithKeyword(const UClass* Class, FString keyword, TArray<FName>& FunctionNames);
 
 	/** Get all function names from this Class/Interface that have a specified keyword. **/
-	UFUNCTION(BlueprintCallable, Category = "Dynamic Code Reflection")
-	static void GetFunctionProperies(const UClass* Class, FString FunctionName, TArray<FString>& PropertyNames);
+	UFUNCTION(BlueprintCallable, Category = "Dynamic Code Reflection", meta = (KeyWords = "property, args, argument"))
+	static void GetFunctionParameterNames(const UClass* Class, FName FunctionName, TArray<FName>& ParameterNames);
 
 	/**
 	* Execute the function on target object with given parameters.

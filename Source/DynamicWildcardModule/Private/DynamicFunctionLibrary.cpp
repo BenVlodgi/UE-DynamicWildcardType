@@ -21,18 +21,18 @@ void UDynamicFunctionLibrary::GetClassInterfaces(UClass* Class, TArray<UClass*>&
 	}
 }
 
-void UDynamicFunctionLibrary::GetFunctionNames(const UClass* Class, TArray<FString>& FunctionNames)
+void UDynamicFunctionLibrary::GetFunctionNames(const UClass* Class, TArray<FName>& FunctionNames)
 {
 	FunctionNames.Empty();
 	//for (TFieldIterator<UFunction> FIT(Class, EFieldIteratorFlags::IncludeSuper); FIT; ++FIT)
 	for (TFieldIterator<UFunction> FIT(Class); FIT; ++FIT)
 	{
 		UFunction* Function = *FIT;
-		FunctionNames.Add(Function->GetName());
+		FunctionNames.Add(Function->GetFName());
 	}
 }
 
-void UDynamicFunctionLibrary::GetFunctionNamesWithKeyword(const UClass* Class, FString keyword, TArray<FString>& FunctionNames)
+void UDynamicFunctionLibrary::GetFunctionNamesWithKeyword(const UClass* Class, FString keyword, TArray<FName>& FunctionNames)
 {
 #if WITH_EDITORONLY_DATA //HasMetaData is editor only
 	FunctionNames.Empty();
@@ -44,24 +44,24 @@ void UDynamicFunctionLibrary::GetFunctionNamesWithKeyword(const UClass* Class, F
 			FString FunctionKeyWords = *Function->FindMetaData(TEXT("KeyWords"))->ToLower();
 			if (FunctionKeyWords.Contains(keyword.ToLower()))
 			{
-				FunctionNames.Add(Function->GetName());
+				FunctionNames.Add(Function->GetFName());
 			}
 		}
 	}
 #endif
 }
 
-void UDynamicFunctionLibrary::GetFunctionProperies(const UClass* Class, FString FunctionName, TArray<FString>& PropertyNames)
+void UDynamicFunctionLibrary::GetFunctionParameterNames(const UClass* Class, FName FunctionName, TArray<FName>& ParameterNames)
 {
-	PropertyNames.Empty();
+	ParameterNames.Empty();
 	for (TFieldIterator<UFunction> FIT(Class); FIT; ++FIT)
 	{
 		UFunction* Function = *FIT;
-		if (Function->GetName() == FunctionName)
+		if (Function->GetFName() == FunctionName)
 		{
 			for (TFieldIterator<FProperty>PIT(Function); PIT; ++PIT)
 			{
-				PropertyNames.Add(PIT->GetName());
+				ParameterNames.Add(PIT->GetFName());
 			}
 		}
 	}
